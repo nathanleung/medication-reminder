@@ -24,36 +24,47 @@ angular.module('medicationReminderApp').controller('MainCtrl', function ($scope,
 	$scope.LAT = "coming up later";
 	$scope.MIS = "missed";
 	$scope.fiveMinsInMilli = 5*60*1000;
+	//local scope
+	var medList = $scope;
+	//helper function convert time
+	function convertMedTimeToMilli(medTime){
+		return (new Date(medTime)).getTime();
+	};
+	//helper function to compare medTime
+	function compareMedTimeWithCurrTime(medTime){
+		// console.log("Current Time: "+ medList.currentTimeUnformatted.valueOf());
+		// console.log("Med Time: "+ convertMedTimeToMilli(medTime));
+		return convertMedTimeToMilli(medTime) - medList.currentTimeUnformatted.valueOf();
+	};
 	//Returns string representing status of med
 	$scope.getStatus = function(currMed){
-		var medList = $scope;
-		function convertMedTimeToMilli(medTime){
-			return (new Date(medTime)).getTime();
-		};
-		function compareMedTimeWithCurrTime(medTime){
-			// console.log("Current Time: "+ medList.currentTimeUnformatted.valueOf());
-			// console.log("Med Time: "+ convertMedTimeToMilli(medTime));
-			return convertMedTimeToMilli(medTime) - medList.currentTimeUnformatted.valueOf();
-		};
-		//if no completed time
+		//if has completed time
 		if(currMed.d.f !== undefined){
 			return $scope.COM;
-		//if med is to be taken in longer than 5 minutes
+		//if med time has passed
 		}else if(compareMedTimeWithCurrTime(currMed.time) < 0){
 			return $scope.MIS;
 		//if med is to be taking within 5 minutes
 		}else{
-			if($scope.currentTimeUnformatted.milliseconds(currMed.time) <= 5){
+			if(compareMedTimeWithCurrTime(currMed.time) <= $scope.fiveMinsInMilli){
 				return $scope.UP;
-			//if med was not taken before due date time
+			//if med greater than 5 min away
 			}else{
 				return $scope.LAT;
 			}
 		}
 	};
-	$scope.hideCompletedButton = function(currMed){
-		return $scope.getStatus(currMed) === $scope.COM;
+	$scope.onMissedList = function(currMed){
+		return ($scope.getStatus(currMed) === $scope.MIS);
 	}
+	$scope.onMedList = function(currMed){
+		return !$scope.onMissedList(currMed);
+	}
+	//hide if no completed time and not within 5 minutes
+	$scope.hideCompletedButton = function(currMed){
+		return ($scope.getStatus(currMed) === $scope.COM || compareMedTimeWithCurrTime(currMed.time) > $scope.fiveMinsInMilli);
+	}
+	//formats date
 	$scope.getDate = function(dateString){
 		return moment(dateString).format('MMMM Do YYYY, h:mm:ss a');
 	}

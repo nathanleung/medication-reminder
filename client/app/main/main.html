@@ -7,13 +7,25 @@
 </header>
 <div class="container">
   <div class="row">
-    <div class="col-lg-6 col-lg-offset-3 text-center">
-        <div ng-repeat="m in meds | orderBy:'time'">
-            {{getDate(m.time)}} {{m.name}} {{m.dosage}} {{getStatus(m)}}
+    <!--nice to separate this into template-->
+    <!--missed tasks on left-->
+    <div class="col-lg-4 col-lg-offset-2 text-center">
+        <div ng-repeat="m in meds | orderBy:'time' | filter:onMissedList" class="panel panel-default">
+          <div class="panel-heading">{{getDate(m.time)}}</div>
+          <div class="panel-body">{{m.name}} <br> {{m.dosage}} <br> {{getStatus(m)}} <br>
             <button ng-hide="hideCompletedButton(m)" ng-click="completedButtonClicked(m)">Complete</button>
+          </div>
         </div>
     </div>
-  </div>
+    <!--med task list-->
+    <div class="col-lg-4 col-lg-offset-2 text-center">
+        <div ng-repeat="m in meds | orderBy:'time' | filter:onMedList" class="panel panel-default">
+          <div class="panel-heading">{{getDate(m.time)}}</div>
+          <div class="panel-body">{{m.name}} <br> {{m.dosage}} <br> {{getStatus(m)}} <br>
+            <button ng-hide="hideCompletedButton(m)" ng-click="completedButtonClicked(m)">Complete</button>
+          </div>
+        </div>
+    </div>
 </div>
 <footer class="footer">
   <div class="container">
