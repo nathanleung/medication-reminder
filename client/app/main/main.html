@@ -8,8 +8,8 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-6 col-lg-offset-3 text-center">
-        <div ng-repeat="m in meds">
-            {{m.time}} {{m.name}} {{m.dosage}}
+        <div ng-repeat="m in meds | orderBy:'time'">
+            {{getDate(m.time)}} {{m.name}} {{m.dosage}} {{m.d.f}} {{getStatus(m)}}
         </div>
     </div>
   </div>
