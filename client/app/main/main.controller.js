@@ -51,12 +51,16 @@ angular.module('medicationReminderApp').controller('MainCtrl', function ($scope,
 			}
 		}
 	};
+	$scope.hideCompletedButton = function(currMed){
+		return $scope.getStatus(currMed) === $scope.COM;
+	}
 	$scope.getDate = function(dateString){
 		return moment(dateString).format('MMMM Do YYYY, h:mm:ss a');
 	}
 	//sets the completed time 
 	$scope.completedButtonClicked = function(currMed){
-		currMed.c.f = moment();
+		currMed.d.f = moment();
+		//update value in api
 	}
 
 });
