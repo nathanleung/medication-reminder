@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('medicationReminderApp').controller('MainCtrl', function ($scope, $http, $window) {
+var app = angular.module('medicationReminderApp');
+app.controller('MainCtrl', function ($scope, $http, $window) {
 	$scope.currentTimeUnformatted = moment();
 
     var start = moment().format('MM/DD/YYYY'),
@@ -73,5 +74,4 @@ angular.module('medicationReminderApp').controller('MainCtrl', function ($scope,
 		currMed.d.f = moment();
 		//update value in api
 	}
-
 });

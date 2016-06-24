@@ -9,7 +9,7 @@ angular.module('medicationReminderApp', [
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
     $urlRouterProvider
-      .otherwise('/');
+      .otherwise('/medList');
 
     $locationProvider.html5Mode(true);
   });
