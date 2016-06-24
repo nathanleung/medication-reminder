@@ -9,17 +9,9 @@
   <div class="row">
     <!--nice to separate this into template-->
     <!--missed tasks on left-->
-    <div ui-view=""></div>
+    <div ui-view="missedList"></div>
     <!--med task list-->
-    <div class="col-lg-4 col-lg-offset-2 text-center">
-        <div>Medication List</div>
-        <div ng-repeat="m in meds | orderBy:'time' | filter:onMedList" class="panel panel-default">
-          <div class="panel-heading">{{getDate(m.time)}}</div>
-          <div class="panel-body">{{m.name}} <br> {{m.dosage}} <br> {{getStatus(m)}} <br>
-            <button ng-hide="hideCompletedButton(m)" ng-click="completedButtonClicked(m)">Complete</button>
-          </div>
-        </div>
-    </div>
+    <div ui-view="medList"></div>
 </div>
 <footer class="footer">
   <div class="container">

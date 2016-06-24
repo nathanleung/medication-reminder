@@ -10,7 +10,15 @@ var app =angular.module('medicationReminderApp');
       })
       .state('main.medList', {
       	url: 'medList',
-      	templateUrl: 'app/main/main.medList.html',
-      	controller: 'MainCtrl'
+      	views:{
+      		"missedList": { 
+      			templateUrl: 'app/main/main.medList.html', 
+      			controller: 'MissedListCtrl'
+      		},
+      		"medList": {
+      			templateUrl: 'app/main/main.medList.html', 
+      			controller: 'MedListCtrl'
+      		}
+      	}
       });
   });

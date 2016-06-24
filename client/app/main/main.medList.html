@@ -1,6 +1,6 @@
 <div class="col-lg-4 col-lg-offset-2 text-center">
-    <div>Missed Medication</div>
-    <div ng-repeat="m in meds | orderBy:'time' | filter:onMissedList" class="panel panel-default">
+    <div>{{title}}</div>
+    <div ng-repeat="m in meds | orderBy:'time' | filter:onList" class="panel panel-default">
       <div class="panel-heading">{{getDate(m.time)}}</div>
       <div class="panel-body">{{m.name}} <br> {{m.dosage}} <br> {{getStatus(m)}} <br>
         <button ng-hide="hideCompletedButton(m)" ng-click="completedButtonClicked(m)">Complete</button>
