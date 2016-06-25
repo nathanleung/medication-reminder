@@ -39,4 +39,27 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];
 
+    //create reminder
+    $scope.createMedReminder = function(){
+        console.log($scope.medName + ", " + $scope.medDosage + ", " + $scope.medOffset);
+        var date = new Date();
+        date = new Date(date.valueOf() + $scope.medOffset*60*1000);
+        var updateMed = {
+            name: $scope.medName,
+            dosage: $scope.medDosage,
+            time: date,
+            completed: false
+
+        }
+        $http.post('/api/medications', updateMed).then(function(med){
+            console.log(med.data.name + " is created");
+            var start = moment().format('MM/DD/YYYY'),
+            end = moment().add(1, 'day').format('MM/DD/YYYY');
+            $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
+                $scope.$parent.med = meds.data;
+                // $scope.$parent.apply();
+            });
+        });
+    };
+
 });

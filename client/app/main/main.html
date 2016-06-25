@@ -3,21 +3,25 @@
 <header class="hero-unit" id="banner">
   <div class="container">
       <h1>{{currentTime}}</h1>
-      <h2>{{selectedDate}}</h2>
   </div>
 </header>
 <div class="container">
   <div class="row">
+    <div>Create new medication reminder</div>
+    <form ng-submit="createMedReminder()">
+      Name: <input type="text" name="medName" ng-model="medName"><br>
+      Dosage: <input type="text" name="dosage" ng-model="medDosage"><br>
+      In how long would you like to be reminded?: <input type="number" name="offset" ng-model="medOffset"> minutes
+      <input type="submit" name="Submit">
+    </form>
     <div class="col-lg-4 col-lg-offset-2">
       <!--date picker-->
       <div class="col-lg-12 text-center">
-        <div>
           <pre>Selected date is: <em>{{selectedDate | date:'fullDate' }}</em></pre>
           <div style="display:inline-block; min-height:290px;">
               <datepicker ng-model="selectedDate" min-date="minDate" show-weeks="true" class="well well-sm" ng-click="$broadcast('dateSelected', selectedDate)"></datepicker>
           </div>
           <button type="button" class="btn btn-sm btn-info" ng-click="today(); $broadcast('dateSelected', selectedDate);">Today</button>
-      </div>
       </div>
       <!--missed tasks on left-->
       <div ui-view="missedList" class="col-lg-12 text-center"></div>

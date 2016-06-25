@@ -23,17 +23,17 @@ app.controller('ListCtrl', function($scope, $controller){
 		//if has completed time
 		if(currMed.d.f !== undefined){
 			return $scope.COM;
+		}
 		//if med time has passed by 5 minutes
-		}else if(compareMedTimeWithCurrTime(currMed.time) <= -$scope.fiveMinsInMilli){
+		if(compareMedTimeWithCurrTime(currMed.time) <= -$scope.fiveMinsInMilli){
 			return $scope.MIS;
+		}
 		//if med is to be taking within 5 minutes
+		if(compareMedTimeWithCurrTime(currMed.time) <= $scope.fiveMinsInMilli){
+			return $scope.UP;
 		}else{
-			if(compareMedTimeWithCurrTime(currMed.time) <= $scope.fiveMinsInMilli){
-				return $scope.UP;
 			//if med is further than 5 min away
-			}else{
-				return $scope.LAT;
-			}
+			return $scope.LAT;
 		}
 	};
 	//hide if no completed time and not within 5 minutes
