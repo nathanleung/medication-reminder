@@ -4,10 +4,13 @@ angular.module('medicationReminderApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
+  'ngAnimate',
   'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+    //have to reroute?
+    $urlRouterProvider.when('/', '/medList');
     $urlRouterProvider
       .otherwise('/medList');
 

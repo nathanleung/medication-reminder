@@ -1,6 +1,6 @@
 'use strict';
 
-var app =angular.module('medicationReminderApp');
+var app = angular.module('medicationReminderApp');
   app.config(function ($stateProvider) {
     $stateProvider
       .state('main', {
@@ -9,7 +9,7 @@ var app =angular.module('medicationReminderApp');
         controller: 'MainCtrl'
       })
       .state('main.medList', {
-      	url: 'medList',
+        url: 'medList',
       	views:{
       		"missedList": { 
       			templateUrl: 'app/main/main.medList.html', 
@@ -19,6 +19,10 @@ var app =angular.module('medicationReminderApp');
       			templateUrl: 'app/main/main.medList.html', 
       			controller: 'MedListCtrl'
       		}
+      		// ,
+      		// "datePicker": {
+      		// 	templateUrl: 'app/main/main.calendar.html'
+      		// }
       	}
       });
   });
