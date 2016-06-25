@@ -3,16 +3,27 @@
 <header class="hero-unit" id="banner">
   <div class="container">
       <h1>{{currentTime}}</h1>
+      <h2>{{selectedDate}}</h2>
   </div>
 </header>
-<div ui-view="datePicker"></div>
 <div class="container">
   <div class="row">
-    <!--nice to separate this into template-->
-    <!--missed tasks on left-->
-    <div ui-view="missedList"></div>
+    <div class="col-lg-4 col-lg-offset-2">
+      <!--date picker-->
+      <div class="col-lg-12 text-center">
+        <div>
+          <pre>Selected date is: <em>{{selectedDate | date:'fullDate' }}</em></pre>
+          <div style="display:inline-block; min-height:290px;">
+              <datepicker ng-model="selectedDate" min-date="minDate" show-weeks="true" class="well well-sm" ng-click="$broadcast('dateSelected', selectedDate)"></datepicker>
+          </div>
+          <button type="button" class="btn btn-sm btn-info" ng-click="today(); $broadcast('dateSelected', selectedDate);">Today</button>
+      </div>
+      </div>
+      <!--missed tasks on left-->
+      <div ui-view="missedList" class="col-lg-12 text-center"></div>
+    </div>
     <!--med task list-->
-    <div ui-view="medList"></div>
+    <div ui-view="medList" class="col-lg-4 col-lg-offset-2 text-center"></div>
 </div>
 <footer class="footer">
   <div class="container">

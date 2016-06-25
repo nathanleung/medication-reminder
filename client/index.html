@@ -31,18 +31,6 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div ng-controller="DatepickerDemoCtrl">
-    <pre>Selected date is: <em>{{dt | date:'fullDate' }}</em></pre>
-
-    <h4>Inline</h4>
-    <div style="display:inline-block; min-height:290px;">
-        <datepicker ng-model="dt" min-date="minDate" show-weeks="true" class="well well-sm"></datepicker>
-    </div>
-
-    <hr />
-    <button type="button" class="btn btn-sm btn-info" ng-click="today()">Today</button>
-    <button type="button" class="btn btn-sm btn-danger" ng-click="clear()">Clear</button>
-</div>
     <div ui-view=""></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
@@ -78,7 +66,6 @@
         <!-- build:js({.tmp,client}) app/app.js -->
         <script src="app/app.js"></script>
           <!-- injector:js -->
-          <script src="app/main/main.calendar.js"></script>
           <script src="app/main/main.controller.js"></script>
           <script src="app/main/main.js"></script>
           <script src="app/main/main.list.controller.js"></script>

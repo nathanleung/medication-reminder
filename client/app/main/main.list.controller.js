@@ -23,14 +23,14 @@ app.controller('ListCtrl', function($scope, $controller){
 		//if has completed time
 		if(currMed.d.f !== undefined){
 			return $scope.COM;
-		//if med time has passed
-		}else if(compareMedTimeWithCurrTime(currMed.time) < 0){
+		//if med time has passed by 5 minutes
+		}else if(compareMedTimeWithCurrTime(currMed.time) <= -$scope.fiveMinsInMilli){
 			return $scope.MIS;
 		//if med is to be taking within 5 minutes
 		}else{
 			if(compareMedTimeWithCurrTime(currMed.time) <= $scope.fiveMinsInMilli){
 				return $scope.UP;
-			//if med greater than 5 min away
+			//if med is further than 5 min away
 			}else{
 				return $scope.LAT;
 			}
@@ -54,8 +54,13 @@ app.controller('ListCtrl', function($scope, $controller){
 app.controller('MedListCtrl', function($scope, $controller){
 	$controller('ListCtrl', {$scope: $scope});
 	$scope.title = "Medication List";
+	$scope.$on('dateSelected', function(event, selectedDate){
+        $scope.selectedDate = selectedDate;
+	});
 	$scope.onList = function(currMed){
-		return ($scope.getStatus(currMed) !== $scope.MIS);
+		var selectedDate = $scope.selectedDate.toDateString();
+		var currDate = moment(currMed.time).format('ddd MMM DD YYYY');
+		return (selectedDate === currDate && $scope.getStatus(currMed) !== $scope.MIS);
 	}
 });
 

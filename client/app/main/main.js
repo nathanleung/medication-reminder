@@ -19,10 +19,6 @@ var app = angular.module('medicationReminderApp');
       			templateUrl: 'app/main/main.medList.html', 
       			controller: 'MedListCtrl'
       		}
-      		// ,
-      		// "datePicker": {
-      		// 	templateUrl: 'app/main/main.calendar.html'
-      		// }
       	}
       });
   });
