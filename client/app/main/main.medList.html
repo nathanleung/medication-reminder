@@ -4,6 +4,7 @@
       <div class="panel-heading">{{getDate(m.time)}}</div>
       <div class="panel-body">{{m.name}} <br> {{m.dosage}} <br> {{getStatus(m)}} <br>
         <button ng-hide="hideCompletedButton(m)" ng-click="completedButtonClicked(m)">Complete</button>
+        <button ng-click="deleteReminder(m)">Delete</button>
       </div>
     </div>
 </div>

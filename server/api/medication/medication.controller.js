@@ -47,18 +47,38 @@ exports.create = function (req, res) {
     });
 };
 
-exports.update = function (req, res) {
-    q.resolve().then(function () {
-        req.body.d.m = moment().toDate();
-        return q(Medication.findByIdAndUpdate(req.params.id, req.body).exec()).then(function (med) {
-            if (!med) {
-                res.send(404);
-            } else {
-                res.json(med);
-            }
-        });
+// exports.update = function (req, res) {
+//     q.resolve().then(function () {
+//         req.body.d.m = moment().toDate();
+//         return q(Medication.findByIdAndUpdate(req.params.id, req.body).exec()).then(function (med) {
+//             if (!med) {
+//                 res.send(404);
+//             } else {
+//                 res.json(med);
+//             }
+//         });
+//     }).catch(function (err) {
+//         console.error('Error occured updating medication', err);
+//         res.send(500);
+//     });
+// };
+exports.update = function(req, res){
+    var updateRequest = req;
+    q(Medication.remove({ _id: updateRequest.params.id }).exec()).then(function (med) {
+        if (!med) {
+            res.send(404);
+        } else {
+            // res.send(204);
+            req.body.d.m = moment().toDate();
+            q(Medication.create(updateRequest.body)).then(function (med) {
+                res.json(201, med);
+            }).catch(function (err) {
+                console.error('Error occured creating medication', err);
+                res.send(500);
+            });
+        }
     }).catch(function (err) {
-        console.error('Error occured updating medication', err);
+        console.error('Error occured deleting medication', err);
         res.send(500);
     });
 };

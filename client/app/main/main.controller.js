@@ -56,7 +56,8 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
             var start = moment().format('MM/DD/YYYY'),
             end = moment().add(1, 'day').format('MM/DD/YYYY');
             $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
-                $scope.$parent.med = meds.data;
+                $scope.meds = meds.data;
+                $scope.$broadcast('updateMeds', $scope.meds);
                 // $scope.$parent.apply();
             });
         });

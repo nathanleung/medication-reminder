@@ -1,7 +1,7 @@
 var app = angular.module('medicationReminderApp');
 
-app.controller('ListCtrl', function($scope, $controller){
-	$controller('MainCtrl', {$scope: $scope});
+app.controller('ListCtrl', function($scope, $controller, $http){
+	$controller('MainCtrl', {$scope: $scope, $http: $http});
 	//different states of the med 
 	$scope.COM = "completed";
 	$scope.UP = "coming up";
@@ -39,16 +39,34 @@ app.controller('ListCtrl', function($scope, $controller){
 	//hide if no completed time and not within 5 minutes
 	$scope.hideCompletedButton = function(currMed){
 		return ($scope.getStatus(currMed) === $scope.COM || compareMedTimeWithCurrTime(currMed.time) > $scope.fiveMinsInMilli);
-	}
+	};
 	//formats date
 	$scope.getDate = function(dateString){
 		return moment(dateString).format('MMMM Do YYYY, h:mm:ss a');
-	}
+	};
 	//sets the completed time 
 	$scope.completedButtonClicked = function(currMed){
-		currMed.d.f = moment();
-		//update value in api
-	}
+		currMed.completed = true;
+		currMed.d.f = moment().toDate();
+        $http.patch('/api/medications/'+currMed._id, currMed).then(function(med){
+        	console.log(med);
+        	console.log(med.d);
+        });
+	};
+	$scope.deleteReminder = function(currMed){
+        $http.delete('/api/medications/'+currMed._id).then(function(response){
+        	console.log(response.status);
+		    var start = moment().format('MM/DD/YYYY'),
+		        end = moment().add(1, 'day').format('MM/DD/YYYY');
+        	$http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
+		        // $scope.$parent.meds = meds.data;
+		        $scope.meds = meds.data;
+		    });
+    	});
+	};
+	$scope.$on('updateMeds', function(event, meds){
+		$scope.meds = meds;
+	});
 });
 
 app.controller('MedListCtrl', function($scope, $controller){
