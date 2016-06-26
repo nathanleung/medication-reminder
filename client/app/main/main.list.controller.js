@@ -51,18 +51,14 @@ app.controller('ListCtrl', function($scope, $controller, $http){
         $http.patch('/api/medications/'+currMed._id, currMed).then(function(med){
         	console.log(med);
         	console.log(med.d);
+		   	$scope.$emit('updateUpMeds');
         });
 	};
 	//delete reminder
 	$scope.deleteReminder = function(currMed){
         $http.delete('/api/medications/'+currMed._id).then(function(response){
         	console.log(response.status);
-		    var start = moment().format('MM/DD/YYYY'),
-		        end = moment().add(1, 'day').format('MM/DD/YYYY');
-        	$http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
-		        // $scope.$parent.meds = meds.data;
-		        $scope.meds = meds.data;
-		    });
+		   	$scope.$emit('updateUpMeds');
     	});
 	};
 	//watch when medication reminders are updated

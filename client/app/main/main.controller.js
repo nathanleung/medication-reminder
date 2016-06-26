@@ -3,19 +3,29 @@
 var app = angular.module('medicationReminderApp');
 app.controller('MainCtrl', function ($scope, $http, $window) {
 	$scope.currentTimeUnformatted = moment();
+    $scope.prevSelectedDate = null;
     $scope.selectedDate = new Date();
 
-    var start = moment().format('MM/DD/YYYY'),
-        end = moment().add(1, 'day').format('MM/DD/YYYY');
-
-    $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
-        $scope.meds = meds.data;
-    });
+    //update start, end dates
+    $scope.updateReminders = function(){
+        var start = moment($scope.selectedDate).format('MM/DD/YYYY'),
+            end = moment($scope.selectedDate).add(1, 'day').format('MM/DD/YYYY');
+        $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
+            $scope.meds = meds.data;
+            $scope.$broadcast('updateMeds', $scope.meds);
+        });
+    };
+    //get first reminders
+    $scope.updateReminders();
 
     $window.setInterval(function () {
         $scope.currentTimeUnformatted = moment();
         $scope.currentTime = $scope.currentTimeUnformatted.format('MMMM Do YYYY, h:mm:ss a');
         $scope.$broadcast('updateCurrentTime', $scope.currentTimeUnformatted);
+        if($scope.prevSelectedDate !== $scope.selectedDate){
+            $scope.updateReminders();
+            $scope.prevSelectedDate = $scope.selectedDate;
+        }
         $scope.$apply();
     }, 1000); 
 
@@ -56,12 +66,13 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
             console.log(med.data.name + " is created");
             var start = moment().format('MM/DD/YYYY'),
             end = moment().add(1, 'day').format('MM/DD/YYYY');
-            $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
-                $scope.meds = meds.data;
-                $scope.$broadcast('updateMeds', $scope.meds);
-                // $scope.$parent.apply();
-            });
+            $scope.updateReminders(start, end);
         });
     };
+
+    //watch when medication reminders are updated
+    $scope.$on('updateUpMeds', function(event){
+        $scope.updateReminders();
+    });
 
 });
