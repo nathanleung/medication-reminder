@@ -49,16 +49,17 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 		currMed.completed = true;
 		currMed.d.f = moment().toDate();
         $http.patch('/api/medications/'+currMed._id, currMed).then(function(med){
-        	console.log(med);
-        	console.log(med.d);
 		   	$scope.$emit('updateUpMeds');
         });
 	};
 	//delete reminder
 	$scope.deleteReminder = function(currMed){
         $http.delete('/api/medications/'+currMed._id).then(function(response){
-        	console.log(response.status);
-		   	$scope.$emit('updateUpMeds');
+        	if(response.status === 204){
+		   		$scope.$emit('updateUpMeds');
+		   	}else{
+		   		console.log("Failed to emit with status code: "+response.status)
+		   	}
     	});
 	};
 	//watch when medication reminders are updated

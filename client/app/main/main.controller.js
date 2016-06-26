@@ -52,7 +52,6 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
 
     //create reminder
     $scope.createMedReminder = function(){
-        console.log($scope.medName + ", " + $scope.medDosage + ", " + $scope.medOffset);
         var date = new Date();
         date = new Date(date.valueOf() + $scope.medOffset*60*1000);
         var updateMed = {
@@ -63,7 +62,6 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
 
         }
         $http.post('/api/medications', updateMed).then(function(med){
-            console.log(med.data.name + " is created");
             var start = moment().format('MM/DD/YYYY'),
             end = moment().add(1, 'day').format('MM/DD/YYYY');
             $scope.updateReminders(start, end);
