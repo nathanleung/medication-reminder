@@ -67,6 +67,34 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 	$scope.$on('updateMeds', function(event, meds){
 		$scope.meds = meds;
 	});
+	$scope.getAlertClass = function(m){
+		var status = $scope.getStatus(m);
+		if(status === $scope.MIS){
+			return 'redPanel';
+		}
+		if(status === $scope.UP){
+			return 'bluePanel';
+		}
+		return "";
+	};
+	$scope.getIconClass = function(m){
+		var status = $scope.getStatus(m);
+		if(status === $scope.COM){
+			return 'glyphicon glyphicon-ok';
+		}
+		if(status === $scope.UP || status === $scope.LAT){
+			return 'glyphicon glyphicon-time';
+		}
+		if(status === $scope.MIS){
+			return 'glyphicon glyphicon-warning-sign';
+		}
+		return "";
+	};
+
+	$scope.getCompletedText = function(m){
+		var date = moment(m.d.f);
+		return "Completed task on: " + date.format('MMMM Do YYYY') + " at: " + date.format('h:mm:ss:a');
+	}
 });
 
 app.controller('MedListCtrl', function($scope, $controller){
