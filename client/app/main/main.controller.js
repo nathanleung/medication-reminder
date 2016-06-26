@@ -1,11 +1,10 @@
 'use strict';
 
 var app = angular.module('medicationReminderApp');
-app.controller('MainCtrl', function ($scope, $http, $window) {
+app.controller('MainCtrl', function ($scope, $http, $window, ngAudio) {
 	$scope.currentTimeUnformatted = moment();
     $scope.prevSelectedDate = null;
     $scope.selectedDate = new Date();
-
     //update start, end dates
     $scope.updateReminders = function(){
         var start = moment($scope.selectedDate).format('MM/DD/YYYY'),
@@ -26,8 +25,56 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
             $scope.updateReminders();
             $scope.prevSelectedDate = $scope.selectedDate;
         }
+        $scope.searchCurrentReminders();
         $scope.$apply();
     }, 1000); 
+
+    //search current reminders only for today - check if alarm should be on
+    //refactor these helper functions
+    $scope.fiveMinsInMilli = 5*60*1000;
+    $scope.soundIsPlaying = false;
+    $scope.mute = false;
+    $scope.sound = null;
+    //helper function convert time
+    function convertMedTimeToMilli(medTime){
+        return (new Date(medTime)).getTime();
+    };
+    $scope.searchCurrentReminders = function(){
+        //linear search through reminders of today
+        for(var i = 0; i< $scope.meds.length; i++){
+            var currMed = $scope.meds[i];
+            var timeDiff = convertMedTimeToMilli(currMed.time) - $scope.currentTimeUnformatted.valueOf();
+            if(timeDiff <= $scope.fiveMinsInMilli && timeDiff >= 0 && currMed.completed === false){
+                if(!$scope.soundIsPlaying && !$scope.mute){
+                    $scope.playAlertSound();
+                }
+                return;
+            }
+        }
+        if($scope.soundIsPlaying){
+            $scope.muteAudio();
+        }
+    };
+    $scope.playAlertSound = function(){
+        if($scope.sound === null){
+            $scope.sound = ngAudio.load("../assets/audio/pager.mp3"); // returns NgAudioObject
+        }
+        $scope.sound.loop = true;
+        $scope.sound.play();
+        $scope.soundIsPlaying = true;
+    };
+    $scope.muteAudio = function(){
+        if($scope.sound !== null){
+            $scope.sound.pause();
+            $scope.sound.loop = 0;
+            $scope.sound.soundIsPlaying = false;
+            $scope.mute = true;
+        }
+    }
+    $scope.enableAudio = function(){
+        $scope.playAlertSound();
+        $scope.mute = false;
+    }
 
     //datePicker setup
     $scope.today = function() {

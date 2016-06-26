@@ -1,22 +1,20 @@
 var app = angular.module('medicationReminderApp');
 
 app.controller('ListCtrl', function($scope, $controller, $http){
-	$controller('MainCtrl', {$scope: $scope, $http: $http});
 	//different states of the med 
 	$scope.COM = "completed";
 	$scope.UP = "coming up";
 	$scope.LAT = "coming up later";
 	$scope.MIS = "missed";
 	$scope.fiveMinsInMilli = 5*60*1000;
-	//local scope
-	var medList = $scope;
+	$scope.currentTimeUnformatted = moment();
 	//helper function convert time
 	function convertMedTimeToMilli(medTime){
 		return (new Date(medTime)).getTime();
 	};
 	//helper function to compare medTime
 	function compareMedTimeWithCurrTime(medTime){
-		return convertMedTimeToMilli(medTime) - medList.currentTimeUnformatted.valueOf();
+		return convertMedTimeToMilli(medTime) - $scope.currentTimeUnformatted.valueOf();
 	};
 	//Returns string representing status of med
 	$scope.getStatus = function(currMed){
@@ -121,16 +119,4 @@ app.controller('MissedListCtrl', function($scope, $controller){
 	$scope.onList = function(currMed){
 		return ($scope.getStatus(currMed) === $scope.MIS);
 	}
-});
-
-app.controller('AudioCtrl', function($scope, ngAudio){
-	//update med list current time
-	$scope.playAlertSound = function(m){
-		$scope.sound = ngAudio.load("../assets/audio/pager.mp3"); // returns NgAudioObject
-		if($scope.getStatus(m) === $scope.UP){
-			$scope.sound.play();
-		}else{
-			$scope.sound.pause();
-		}
-	};
 });

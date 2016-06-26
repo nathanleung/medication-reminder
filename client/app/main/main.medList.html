@@ -1,6 +1,6 @@
 <div>
     <div>{{title}}</div>
-    <div ng-repeat="m in meds | orderBy:'time' | filter:onList" class="panel panel-default" ng-class="getAlertClass(m)" ng-controller="AudioCtrl">
+    <div ng-repeat="m in meds | orderBy:'time' | filter:onList" class="panel panel-default" ng-class="getAlertClass(m)" >
 		<div class="panel-heading">{{getDate(m.time)}}</div>
 		<div class="panel-body">
 		<div ng-class="getIconClass(m)"> </div>
