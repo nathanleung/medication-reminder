@@ -7,6 +7,7 @@ angular.module('medicationReminderApp', [
   'ngAnimate',
   'ui.router',
   'ui.bootstrap',
+  'ngAudio'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
     //have to reroute?

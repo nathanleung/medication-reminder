@@ -53,6 +53,7 @@ app.controller('ListCtrl', function($scope, $controller, $http){
         	console.log(med.d);
         });
 	};
+	//delete reminder
 	$scope.deleteReminder = function(currMed){
         $http.delete('/api/medications/'+currMed._id).then(function(response){
         	console.log(response.status);
@@ -64,9 +65,11 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 		    });
     	});
 	};
+	//watch when medication reminders are updated
 	$scope.$on('updateMeds', function(event, meds){
 		$scope.meds = meds;
 	});
+	//get alert class for missed and upcomming reminders
 	$scope.getAlertClass = function(m){
 		var status = $scope.getStatus(m);
 		if(status === $scope.MIS){
@@ -77,6 +80,7 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 		}
 		return "";
 	};
+	//get the icon class for the different states
 	$scope.getIconClass = function(m){
 		var status = $scope.getStatus(m);
 		if(status === $scope.COM){
@@ -90,11 +94,15 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 		}
 		return "";
 	};
-
+	//get the text for the completed reminder
 	$scope.getCompletedText = function(m){
 		var date = moment(m.d.f);
 		return "Completed task on: " + date.format('MMMM Do YYYY') + " at: " + date.format('h:mm:ss:a');
-	}
+	};
+	//update med list current time
+	$scope.$on('updateCurrentTime', function(event, currentTime){
+		$scope.currentTimeUnformatted = currentTime;
+	});
 });
 
 app.controller('MedListCtrl', function($scope, $controller){
@@ -107,7 +115,7 @@ app.controller('MedListCtrl', function($scope, $controller){
 		var selectedDate = $scope.selectedDate.toDateString();
 		var currDate = moment(currMed.time).format('ddd MMM DD YYYY');
 		return (selectedDate === currDate && $scope.getStatus(currMed) !== $scope.MIS);
-	}
+	};
 });
 
 app.controller('MissedListCtrl', function($scope, $controller){
@@ -116,4 +124,16 @@ app.controller('MissedListCtrl', function($scope, $controller){
 	$scope.onList = function(currMed){
 		return ($scope.getStatus(currMed) === $scope.MIS);
 	}
+});
+
+app.controller('AudioCtrl', function($scope, ngAudio){
+	//update med list current time
+	$scope.playAlertSound = function(m){
+		$scope.sound = ngAudio.load("../assets/audio/pager.mp3"); // returns NgAudioObject
+		if($scope.getStatus(m) === $scope.UP){
+			$scope.sound.play();
+		}else{
+			$scope.sound.pause();
+		}
+	};
 });

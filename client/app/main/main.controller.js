@@ -15,6 +15,7 @@ app.controller('MainCtrl', function ($scope, $http, $window) {
     $window.setInterval(function () {
         $scope.currentTimeUnformatted = moment();
         $scope.currentTime = $scope.currentTimeUnformatted.format('MMMM Do YYYY, h:mm:ss a');
+        $scope.$broadcast('updateCurrentTime', $scope.currentTimeUnformatted);
         $scope.$apply();
     }, 1000); 
 
