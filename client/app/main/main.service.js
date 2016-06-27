@@ -69,7 +69,8 @@ app.factory('meds', function($http){
     //create reminder - not quite created exactly offset off
     meds.createMedReminder = function(reminderOffset, medName, medDosage){
     	var medReminders = meds;
-        date = new Date(meds.selectedDate.valueOf() + reminderOffset*60*1000);
+    	var currTime = new Date();
+        date = new Date(currTime.valueOf() + reminderOffset*60*1000);
         var updateMed = {
             name: medName,
             dosage: medDosage,
@@ -104,4 +105,57 @@ app.factory('meds', function($http){
     	});
 	};
 	return meds;
-})
+});
+
+app.factory('audio', function(ngAudio,status){
+	var audioControl = {};
+	audioControl.soundIsPlaying = false;
+    audioControl.mute = false;
+    audioControl.sound = null;
+    audioControl.alertComingUp = "../assets/audio/pager.mp3";
+    audioControl.alertMissed = "../assets/audio/alarm_clock.mp3";
+
+    //methods for alert
+    audioControl.playAlertSound = function(){
+    	if(this.sound !== null){
+	        this.sound.loop = true;
+	        this.sound.play();
+	        this.soundIsPlaying = true;
+	    }
+    };
+    audioControl.playSpecificSound = function(src, volume){
+    	if(this.mute){
+    		return;
+    	}
+    	if(this.soundIsPlaying && this.sound.id !== src){
+    		this.turnOffAudio();
+    	}
+    	if(this.sound === null || this.sound.id !== src){
+    		this.sound = ngAudio.load(src);
+    		this.sound.volume = volume;
+    	}
+    	this.playAlertSound();
+    };
+    audioControl.playAlertMissed = function(){
+    	this.playSpecificSound(this.alertMissed, 1);
+    };
+    audioControl.playAlertComingUp = function(){
+    	this.playSpecificSound(this.alertComingUp, 0.5);
+    }
+    audioControl.muteAudio = function(){
+    	this.mute = true;
+    	this.turnOffAudio();
+    }
+    audioControl.turnOffAudio = function(){
+        if(this.sound !== null){
+            this.sound.pause();
+            this.sound.loop = 0;
+            this.soundIsPlaying = false;
+        }
+    }
+    audioControl.enableAudio = function(){
+        this.playAlertSound();
+        this.mute = false;
+    }
+    return audioControl;
+});

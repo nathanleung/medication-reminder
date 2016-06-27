@@ -1,11 +1,12 @@
 'use strict';
 
 var app = angular.module('medicationReminderApp');
-app.controller('MainCtrl', function ($scope, $window, ngAudio, date, status, meds) {
+app.controller('MainCtrl', function ($scope, $window, audio, date, status, meds) {
 	$scope.date = date;
     $scope.status = status;
     $scope.meds = meds;
     $scope.prevSelectedDate = null;
+    $scope.audio = audio;
     //update start, end dates
     $scope.updateReminders = function(){
         $scope.meds.updateReminders();
@@ -21,51 +22,47 @@ app.controller('MainCtrl', function ($scope, $window, ngAudio, date, status, med
         $scope.$apply();
     }, 1000); 
 
-    //search current reminders only for today - check if alarm should be on
-    //refactor these helper functions
-    $scope.soundIsPlaying = false;
-    $scope.mute = false;
-    $scope.sound = null;
     //helper function convert time
     function convertMedTimeToMilli(medTime){
         return (new Date(medTime)).getTime();
     };
+
+    //search current reminders only for today - check if alarm should be on
+    //methods for alert
     $scope.searchCurrentReminders = function(){
+        var missedAlerts = false;
+        var comingUpAlerts = false;
         //linear search through reminders of today
         for(var i = 0; i< $scope.meds.medList.length; i++){
             var currMed = $scope.meds.medList[i];
-            if($scope.status.getStatus(currMed, $scope.date.currentTime) === $scope.status.UP){
-                if(!$scope.soundIsPlaying && !$scope.mute){
-                    $scope.playAlertSound();
-                }
-                return;
+            var status = $scope.status.getStatus(currMed, $scope.date.currentTime);
+            if(status === $scope.status.UP){
+                comingUpAlerts = true;
+            }
+            if(status === $scope.status.MIS){
+                missedAlerts = true;
+                break;
             }
         }
-        if($scope.soundIsPlaying){
-            $scope.muteAudio();
+        if(missedAlerts){
+            $scope.audio.playAlertMissed();
+            return;
         }
-    };
-    $scope.playAlertSound = function(){
-        if($scope.sound === null){
-            $scope.sound = ngAudio.load("../assets/audio/pager.mp3"); // returns NgAudioObject
+        if(comingUpAlerts){
+            $scope.audio.playAlertComingUp();
+            return;
         }
-        $scope.sound.loop = true;
-        $scope.sound.play();
-        $scope.soundIsPlaying = true;
+        if($scope.audio.soundIsPlaying){
+            $scope.audio.turnOffAudio();
+        }
     };
     $scope.muteAudio = function(){
-        if($scope.sound !== null){
-            $scope.sound.pause();
-            $scope.sound.loop = 0;
-            $scope.sound.soundIsPlaying = false;
-            $scope.mute = true;
-        }
-    }
-    $scope.enableAudio = function(){
-        $scope.playAlertSound();
-        $scope.mute = false;
+        $scope.audio.muteAudio();
     }
 
+    $scope.enableAudio = function(){
+            $scope.audio.enableAudio();
+    }
     //datePicker setup
     $scope.today = function() {
         $scope.meds.updateSelectedDate();
