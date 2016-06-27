@@ -32,10 +32,10 @@ app.controller('ListCtrl', function($scope, $controller, date, status, meds){
 	$scope.getAlertClass = function(m){
 		var status = $scope.getStatus(m);
 		if(status === $scope.status.MIS){
-			return 'redPanel';
+			return 'panel-danger';
 		}
 		if(status === $scope.status.UP){
-			return 'bluePanel';
+			return 'panel-primary';
 		}
 		return "";
 	};
@@ -56,7 +56,7 @@ app.controller('ListCtrl', function($scope, $controller, date, status, meds){
 	//get the text for the completed reminder
 	$scope.getCompletedText = function(m){
 		var date = moment(m.d.f);
-		return "Completed task on: " + date.format('MMMM Do YYYY') + " at: " + date.format('h:mm:ss:a');
+		return "Completed at: " + date.format('h:mm:ss:a');
 	};
 	//Check if reminder is completed
 	$scope.isCompleted = function(m){
