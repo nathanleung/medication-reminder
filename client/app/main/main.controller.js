@@ -1,18 +1,14 @@
 'use strict';
 
 var app = angular.module('medicationReminderApp');
-app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, status, meds) {
+app.controller('MainCtrl', function ($scope, $window, ngAudio, date, status, meds) {
 	$scope.date = date;
     $scope.status = status;
     $scope.meds = meds;
     $scope.prevSelectedDate = null;
     //update start, end dates
     $scope.updateReminders = function(){
-        var start = moment($scope.meds.selectedDate).format('MM/DD/YYYY'),
-            end = moment($scope.meds.selectedDate).add(1, 'day').format('MM/DD/YYYY');
-        $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
-            $scope.meds.updateMedList(meds.data);
-        });
+        $scope.meds.updateReminders();
     };
 
     $window.setInterval(function () {
@@ -27,7 +23,6 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, stat
 
     //search current reminders only for today - check if alarm should be on
     //refactor these helper functions
-    $scope.fiveMinsInMilli = 5*60*1000;
     $scope.soundIsPlaying = false;
     $scope.mute = false;
     $scope.sound = null;
@@ -94,25 +89,7 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, stat
 
     //create reminder - not quite created exactly offset off
     $scope.createMedReminder = function(){
-        var date = new Date();
-        date = new Date(date.valueOf() + $scope.medOffset*60*1000);
-        var updateMed = {
-            name: $scope.medName,
-            dosage: $scope.medDosage,
-            time: date,
-            completed: false
-
-        }
-        $http.post('/api/medications', updateMed).then(function(med){
-            var start = moment().format('MM/DD/YYYY'),
-            end = moment().add(1, 'day').format('MM/DD/YYYY');
-            $scope.updateReminders();
-        });
+        $scope.meds.createMedReminder($scope.medOffset, $scope.medName, $scope.medDosage);
     };
-
-    //watch when medication reminders are updated
-    $scope.$on('updateUpMeds', function(event){
-        $scope.updateReminders();
-    });
 
 });

@@ -1,6 +1,6 @@
 var app = angular.module('medicationReminderApp');
 
-app.controller('ListCtrl', function($scope, $controller, $http, date, status, meds){
+app.controller('ListCtrl', function($scope, $controller, date, status, meds){
 	//different states of the med 
 	$scope.status = status;
 	$scope.date = date;
@@ -22,21 +22,11 @@ app.controller('ListCtrl', function($scope, $controller, $http, date, status, me
 	};
 	//sets the completed time 
 	$scope.completedButtonClicked = function(currMed){
-		currMed.completed = true;
-		currMed.d.f = moment().toDate();
-        $http.patch('/api/medications/'+currMed._id, currMed).then(function(med){
-		   	$scope.$emit('updateUpMeds');
-        });
+		$scope.meds.completeReminder(currMed);
 	};
 	//delete reminder
 	$scope.deleteReminder = function(currMed){
-        $http.delete('/api/medications/'+currMed._id).then(function(response){
-        	if(response.status === 204){
-		   		$scope.$emit('updateUpMeds');
-		   	}else{
-		   		console.log("Failed to emit with status code: "+response.status)
-		   	}
-    	});
+		$scope.meds.deleteReminder(currMed);
 	};
 	//get alert class for missed and upcomming reminders
 	$scope.getAlertClass = function(m){
