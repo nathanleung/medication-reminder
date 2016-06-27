@@ -1,8 +1,10 @@
 'use strict';
 
 var app = angular.module('medicationReminderApp');
-app.controller('MainCtrl', function ($scope, $http, $window, ngAudio) {
-	$scope.currentTimeUnformatted = moment();
+app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, status, meds) {
+	$scope.date = date;
+    $scope.status = status;
+    $scope.meds = meds;
     $scope.prevSelectedDate = null;
     $scope.selectedDate = new Date();
     //update start, end dates
@@ -10,17 +12,12 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio) {
         var start = moment($scope.selectedDate).format('MM/DD/YYYY'),
             end = moment($scope.selectedDate).add(1, 'day').format('MM/DD/YYYY');
         $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
-            $scope.meds = meds.data;
-            $scope.$broadcast('updateMeds', $scope.meds);
+            $scope.meds.updateMedList(meds.data);
         });
     };
-    //get first reminders
-    $scope.updateReminders();
 
     $window.setInterval(function () {
-        $scope.currentTimeUnformatted = moment();
-        $scope.currentTime = $scope.currentTimeUnformatted.format('MMMM Do YYYY, h:mm:ss a');
-        $scope.$broadcast('updateCurrentTime', $scope.currentTimeUnformatted);
+        $scope.date.updateTime();
         if($scope.prevSelectedDate !== $scope.selectedDate){
             $scope.updateReminders();
             $scope.prevSelectedDate = $scope.selectedDate;
@@ -41,10 +38,9 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio) {
     };
     $scope.searchCurrentReminders = function(){
         //linear search through reminders of today
-        for(var i = 0; i< $scope.meds.length; i++){
-            var currMed = $scope.meds[i];
-            var timeDiff = convertMedTimeToMilli(currMed.time) - $scope.currentTimeUnformatted.valueOf();
-            if(timeDiff <= $scope.fiveMinsInMilli && timeDiff >= 0 && currMed.completed === false){
+        for(var i = 0; i< $scope.meds.medList.length; i++){
+            var currMed = $scope.meds.medList[i];
+            if($scope.status.getStatus(currMed, $scope.date.currentTime) === $scope.status.UP){
                 if(!$scope.soundIsPlaying && !$scope.mute){
                     $scope.playAlertSound();
                 }
@@ -97,7 +93,7 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio) {
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
     $scope.format = $scope.formats[0];
 
-    //create reminder
+    //create reminder - not quite created exactly offset off
     $scope.createMedReminder = function(){
         var date = new Date();
         date = new Date(date.valueOf() + $scope.medOffset*60*1000);

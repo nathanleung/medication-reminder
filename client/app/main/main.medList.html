@@ -1,12 +1,12 @@
 <div>
     <div>{{title}}</div>
-    <div ng-repeat="m in meds | orderBy:'time' | filter:onList" class="panel panel-default" ng-class="getAlertClass(m)" >
+    <div ng-repeat="m in meds.medList | orderBy:'time' | filter:onList" class="panel panel-default" ng-class="getAlertClass(m)" >
 		<div class="panel-heading">{{getDate(m.time)}}</div>
 		<div class="panel-body">
 		<div ng-class="getIconClass(m)"> </div>
 		<div>{{m.name}} <br> {{m.dosage}}
 		</div>
-		<div ng-show="getStatus(m) === COM">{{getCompletedText(m)}}</div>
+		<div ng-show="isCompleted(m)">{{getCompletedText(m)}}</div>
 		<button ng-hide="hideCompletedButton(m)" ng-click="completedButtonClicked(m)">Complete</button>
 		<button ng-click="deleteReminder(m)">Delete</button>
 		</div>

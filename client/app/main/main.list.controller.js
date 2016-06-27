@@ -1,42 +1,20 @@
 var app = angular.module('medicationReminderApp');
 
-app.controller('ListCtrl', function($scope, $controller, $http){
+app.controller('ListCtrl', function($scope, $controller, $http, date, status, meds){
 	//different states of the med 
-	$scope.COM = "completed";
-	$scope.UP = "coming up";
-	$scope.LAT = "coming up later";
-	$scope.MIS = "missed";
-	$scope.fiveMinsInMilli = 5*60*1000;
-	$scope.currentTimeUnformatted = moment();
-	//helper function convert time
-	function convertMedTimeToMilli(medTime){
-		return (new Date(medTime)).getTime();
-	};
-	//helper function to compare medTime
-	function compareMedTimeWithCurrTime(medTime){
-		return convertMedTimeToMilli(medTime) - $scope.currentTimeUnformatted.valueOf();
-	};
-	//Returns string representing status of med
+	$scope.status = status;
+	$scope.date = date;
+	$scope.meds = meds;
+
+	//wrapper for Returns string representing status of med
 	$scope.getStatus = function(currMed){
-		//if has completed time
-		if(currMed.d.f !== undefined){
-			return $scope.COM;
-		}
-		//if med time has passed by 5 minutes
-		if(compareMedTimeWithCurrTime(currMed.time) <= -$scope.fiveMinsInMilli){
-			return $scope.MIS;
-		}
-		//if med is to be taking within 5 minutes
-		if(compareMedTimeWithCurrTime(currMed.time) <= $scope.fiveMinsInMilli){
-			return $scope.UP;
-		}else{
-			//if med is further than 5 min away
-			return $scope.LAT;
-		}
-	};
+		return $scope.status.getStatus(currMed, $scope.date.currentTime);
+	}
 	//hide if no completed time and not within 5 minutes
 	$scope.hideCompletedButton = function(currMed){
-		return ($scope.getStatus(currMed) === $scope.COM || compareMedTimeWithCurrTime(currMed.time) > $scope.fiveMinsInMilli);
+		var status = $scope.getStatus(currMed);
+		return (status === $scope.status.COM || 
+			status === $scope.status.LAT);
 	};
 	//formats date
 	$scope.getDate = function(dateString){
@@ -60,17 +38,13 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 		   	}
     	});
 	};
-	//watch when medication reminders are updated
-	$scope.$on('updateMeds', function(event, meds){
-		$scope.meds = meds;
-	});
 	//get alert class for missed and upcomming reminders
 	$scope.getAlertClass = function(m){
 		var status = $scope.getStatus(m);
-		if(status === $scope.MIS){
+		if(status === $scope.status.MIS){
 			return 'redPanel';
 		}
-		if(status === $scope.UP){
+		if(status === $scope.status.UP){
 			return 'bluePanel';
 		}
 		return "";
@@ -78,13 +52,13 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 	//get the icon class for the different states
 	$scope.getIconClass = function(m){
 		var status = $scope.getStatus(m);
-		if(status === $scope.COM){
+		if(status === $scope.status.COM){
 			return 'glyphicon glyphicon-ok';
 		}
-		if(status === $scope.UP || status === $scope.LAT){
+		if(status === $scope.status.UP || status === $scope.status.LAT){
 			return 'glyphicon glyphicon-time';
 		}
-		if(status === $scope.MIS){
+		if(status === $scope.status.MIS){
 			return 'glyphicon glyphicon-warning-sign';
 		}
 		return "";
@@ -94,12 +68,12 @@ app.controller('ListCtrl', function($scope, $controller, $http){
 		var date = moment(m.d.f);
 		return "Completed task on: " + date.format('MMMM Do YYYY') + " at: " + date.format('h:mm:ss:a');
 	};
-	//update med list current time
-	$scope.$on('updateCurrentTime', function(event, currentTime){
-		$scope.currentTimeUnformatted = currentTime;
-	});
+	//Check if reminder is completed
+	$scope.isCompleted = function(m){
+		return $scope.getStatus(m) === $scope.status.COM;
+	}
 });
-
+//controller for medication list
 app.controller('MedListCtrl', function($scope, $controller){
 	$controller('ListCtrl', {$scope: $scope});
 	$scope.title = "Medication List";
@@ -109,14 +83,14 @@ app.controller('MedListCtrl', function($scope, $controller){
 	$scope.onList = function(currMed){
 		var selectedDate = $scope.selectedDate.toDateString();
 		var currDate = moment(currMed.time).format('ddd MMM DD YYYY');
-		return (selectedDate === currDate && $scope.getStatus(currMed) !== $scope.MIS);
+		return (selectedDate === currDate && $scope.getStatus(currMed) !== $scope.status.MIS);
 	};
 });
-
+//controller for missed list
 app.controller('MissedListCtrl', function($scope, $controller){
 	$controller('ListCtrl', {$scope: $scope});
 	$scope.title = "Missed Medication";
 	$scope.onList = function(currMed){
-		return ($scope.getStatus(currMed) === $scope.MIS);
+		return ($scope.getStatus(currMed) === $scope.status.MIS);
 	}
 });

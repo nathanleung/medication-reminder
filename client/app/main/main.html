@@ -1,9 +1,9 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <header class="hero-unit" id="banner">
-  <!-- <div class="container">
-      <h1>{{currentTime}}</h1>
-  </div> -->
+  <div class="container">
+      <h1>{{date.currentTimeFormatted}}</h1>
+  </div>
 </header>
 <button ng-click="muteAudio()">Mute Audio</button>
 <button ng-click="enableAudio()">Enable Audio</button>
