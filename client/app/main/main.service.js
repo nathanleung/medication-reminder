@@ -50,9 +50,12 @@ app.factory('status', function(){
 app.factory('meds', function(){
 	var meds = {};
 	meds.medList = [];
-
+	meds.selectedDate = new Date();
 	meds.updateMedList = function(arrOfNewMeds){
 		angular.copy(arrOfNewMeds, meds.medList);
+	}
+	meds.updateSelectedDate = function(){
+		meds.selectedDate = new Date();
 	}
 	return meds;
 })

@@ -6,11 +6,10 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, stat
     $scope.status = status;
     $scope.meds = meds;
     $scope.prevSelectedDate = null;
-    $scope.selectedDate = new Date();
     //update start, end dates
     $scope.updateReminders = function(){
-        var start = moment($scope.selectedDate).format('MM/DD/YYYY'),
-            end = moment($scope.selectedDate).add(1, 'day').format('MM/DD/YYYY');
+        var start = moment($scope.meds.selectedDate).format('MM/DD/YYYY'),
+            end = moment($scope.meds.selectedDate).add(1, 'day').format('MM/DD/YYYY');
         $http.get('/api/medications?start=' + start + '&end=' + end).then(function (meds) {
             $scope.meds.updateMedList(meds.data);
         });
@@ -18,9 +17,9 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, stat
 
     $window.setInterval(function () {
         $scope.date.updateTime();
-        if($scope.prevSelectedDate !== $scope.selectedDate){
+        if($scope.prevSelectedDate !== $scope.meds.selectedDate){
             $scope.updateReminders();
-            $scope.prevSelectedDate = $scope.selectedDate;
+            $scope.prevSelectedDate = $scope.meds.selectedDate;
         }
         $scope.searchCurrentReminders();
         $scope.$apply();
@@ -74,7 +73,7 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, stat
 
     //datePicker setup
     $scope.today = function() {
-        $scope.selectedDate = new Date();
+        $scope.meds.updateSelectedDate();
     };
     $scope.today();
 
@@ -107,7 +106,7 @@ app.controller('MainCtrl', function ($scope, $http, $window, ngAudio, date, stat
         $http.post('/api/medications', updateMed).then(function(med){
             var start = moment().format('MM/DD/YYYY'),
             end = moment().add(1, 'day').format('MM/DD/YYYY');
-            $scope.updateReminders(start, end);
+            $scope.updateReminders();
         });
     };
 
